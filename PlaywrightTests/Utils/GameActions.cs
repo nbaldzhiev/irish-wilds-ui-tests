@@ -10,8 +10,8 @@ public static class GameActions
 {
   /// <summary>
   /// Asserts that the balance amount is correct.
-  /// <param name="amount">The expected amount as seen in the UI, e.g. "1,980.00"</param>
   /// </summary>
+  /// <param name="amount">The expected amount as seen in the UI, e.g. "1,980.00"</param>
   public static async Task AssertBalanceAmountIsCorrect(IPage page, string amount)
   {
     await Expect(page.Locator(".balance .amount")).ToHaveTextAsync($"${amount}");
@@ -19,10 +19,17 @@ public static class GameActions
 
   /// <summary>
   /// Asserts that the win amount is correct.
-  /// <param name="amount">The expected amount as seen in the UI, e.g. "0.00"</param>
   /// </summary>
+  /// <param name="amount">The expected amount as seen in the UI, e.g. "0.00"</param>
   public static async Task AssertWinAmountIsCorrect(IPage page, string amount)
   {
     await Expect(page.Locator(".win .amount")).ToHaveTextAsync($"${amount}");
+  }
+  /// <summary>
+  /// Triggers a spin using the spin arrow button.
+  /// </summary>
+  public static async Task TriggerSpin(IPage page)
+  {
+    await page.Locator("button.arrows-spin-button").ClickAsync();
   }
 }
