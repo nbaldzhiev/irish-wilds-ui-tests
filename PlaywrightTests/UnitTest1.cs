@@ -1,8 +1,6 @@
 ﻿using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
-using NUnit.Framework;
 
 using PlaywrightTests.Utils;
 
@@ -23,10 +21,7 @@ public class ExampleTest : PageTest
   {
     await Common.OpenHomepage(Page);
 
-    await Page.Locator(".button__slider-play").ClickAsync();
-
-    // Expect a title "to contain" a substring.
-    await Expect(Page).ToHaveTitleAsync(new Regex("Playwright"));
+    await Common.StartGame(Page);
   }
 
   [Test]
