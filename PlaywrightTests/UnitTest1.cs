@@ -19,9 +19,9 @@ public class ExampleTest : PageTest
   [Test]
   public async Task HasTitle()
   {
-    await Common.OpenHomepage(Page);
+    await Home.OpenHomepage(Page);
 
-    await Common.StartGame(Page);
+    await Home.StartGame(Page);
   }
 
   [Test]

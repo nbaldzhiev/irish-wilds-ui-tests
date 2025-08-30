@@ -3,8 +3,15 @@ using static Microsoft.Playwright.Assertions;
 
 namespace PlaywrightTests.Utils;
 
-public static class Common
+/// <summary>
+/// Contains methods related to the homepage of the Irish Wilds game.
+/// </summary>
+public static class Home
 {
+
+  /// <summary>
+  /// Opens the homepage of the Irish Wilds game.
+  /// </summary>
   public static async Task OpenHomepage(IPage page)
   {
     await page.GotoAsync(Settings.EnvironmentURL);
@@ -12,6 +19,10 @@ public static class Common
     await Expect(page.Locator(".button__slider-play")).ToBeVisibleAsync();
   }
 
+  /// <summary>
+  /// Starts the Irish Wilds game by clicking on the homepage start button. After that, it verifies that the main
+  /// elements on the game page are visible.
+  /// </summary>
   public static async Task StartGame(IPage page)
   {
     await page.Locator(".button__slider-play").ClickAsync();
