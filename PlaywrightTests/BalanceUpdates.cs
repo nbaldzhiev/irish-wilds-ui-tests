@@ -17,6 +17,7 @@ public class BalanceUpdates
 
   /// <summary>
   /// Creates a new browser & browser context depending on the selected device type.
+  /// Starts trace recording (upon any test result). Trace zips are located in bin/Debug/netX/playwright-traces/
   /// Open the homepage of the Irish Wilds game, starts the game and verifies the initial balances before each test.
   /// </summary>
   [SetUp]
@@ -30,6 +31,8 @@ public class BalanceUpdates
       throw new Exception("Setup failed: Argument `deviceName` cannot be null");
     }
 
+
+    // start a browser context with the provided device
     _playwright = await Playwright.CreateAsync();
     _browser = await _playwright.Chromium.LaunchAsync(new()
     {
@@ -38,6 +41,15 @@ public class BalanceUpdates
     _context = await _browser.NewContextAsync(_playwright.Devices[deviceName]);
     _page = await _context.NewPageAsync();
   
+    // start trace recording
+    await _context.Tracing.StartAsync(new()
+    {
+      Title = TestContext.CurrentContext.Test.ClassName + "." + TestContext.CurrentContext.Test.Name,
+      Screenshots = true,
+      Snapshots = true,
+      Sources = true
+    });
+
     // set the expect timeout to 15s in order to have control over it
     // SetDefaultExpectTimeout(15_000);
 
@@ -49,11 +61,22 @@ public class BalanceUpdates
   }
 
   /// <summary>
+  /// Stops the trace recording started in the setup.
   /// Gracefully close up the browser context & browser itself after creating them manually in the setup phase.
   /// </summary>
   [TearDown]
   public async Task Teardown()
   {
+    // trace zips are stored in bin/Debug/netX/playwright-traces/
+    await _context.Tracing.StopAsync(new()
+    {
+      Path = Path.Combine(
+        TestContext.CurrentContext.WorkDirectory,
+        "playwright-traces",
+        $"{TestContext.CurrentContext.Test.ClassName}.{TestContext.CurrentContext.Test.Name}.zip"
+      )
+    });
+
     await _context.CloseAsync();
     await _browser.CloseAsync();
   }
