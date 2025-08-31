@@ -1,4 +1,4 @@
-name: Build & Test
+name: Run E2E Tests
 
 on:
   pull_request:
@@ -23,7 +23,7 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build
 
       - name: Install browsers
         run: pwsh PlaywrightTests/bin/Debug/net9.0/playwright.ps1 install
@@ -34,6 +34,7 @@ jobs:
         run: dotnet test
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: playwright-traces
           path: PlaywrightTests/bin/Debug/net9.0/playwright-traces/
