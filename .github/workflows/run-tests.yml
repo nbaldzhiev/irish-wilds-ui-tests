@@ -1,4 +1,4 @@
-name: Run E2E Tests
+name: Run E2E Tests - Desktop & Mobile
 
 on:
   pull_request:
@@ -29,9 +29,14 @@ jobs:
       - name: Install browsers
         run: pwsh PlaywrightTests/bin/Debug/net${{ env.DOTNET_MAJOR }}/playwright.ps1 install
 
-      - name: Run tests
+      - name: Run tests against Desktop (Chrome)
         env:
           DEVICE: "Desktop Chrome"
+        run: dotnet test
+
+      - name: Run tests against Mobile (Galaxy S24)
+        env:
+          DEVICE: "Galaxy S24"
         run: dotnet test
 
       - name: Check traces directory

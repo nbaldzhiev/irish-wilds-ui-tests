@@ -1,5 +1,4 @@
 ﻿using Microsoft.Playwright;
-using NUnit.Framework;
 
 using PlaywrightTests.Utils;
 
@@ -14,6 +13,7 @@ public class BalanceUpdates
   private IBrowser _browser;
   private IBrowserContext _context;
   private IPage _page;
+  private string deviceName;
 
   /// <summary>
   /// Creates a new browser & browser context depending on the selected device type.
@@ -24,7 +24,7 @@ public class BalanceUpdates
   public async Task Setup()
   {
     var headless = bool.Parse(Environment.GetEnvironmentVariable("HEADLESS") ?? "true");
-    var deviceName = Environment.GetEnvironmentVariable("DEVICE");
+    deviceName = Environment.GetEnvironmentVariable("DEVICE");
 
     if (string.IsNullOrEmpty(deviceName))
     {
@@ -44,14 +44,11 @@ public class BalanceUpdates
     // start trace recording
     await _context.Tracing.StartAsync(new()
     {
-      Title = TestContext.CurrentContext.Test.ClassName + "." + TestContext.CurrentContext.Test.Name,
+      Title = TestContext.CurrentContext.Test.ClassName + "." + TestContext.CurrentContext.Test.Name + $".{deviceName}",
       Screenshots = true,
       Snapshots = true,
       Sources = true
     });
-
-    // set the expect timeout to 15s in order to have control over it
-    // SetDefaultExpectTimeout(15_000);
 
     await Home.OpenHomepage(_page);
     await Home.StartGame(_page);
@@ -73,7 +70,7 @@ public class BalanceUpdates
       Path = Path.Combine(
         TestContext.CurrentContext.WorkDirectory,
         "playwright-traces",
-        $"{TestContext.CurrentContext.Test.ClassName}.{TestContext.CurrentContext.Test.Name}.zip"
+        $"{TestContext.CurrentContext.Test.ClassName}.{TestContext.CurrentContext.Test.Name}.{deviceName}.zip"
       )
     });
 

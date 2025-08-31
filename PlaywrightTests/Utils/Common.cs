@@ -12,18 +12,18 @@ public static class Home
   /// <summary>
   /// Opens the homepage of the Irish Wilds game.
   /// </summary>
-  public static async Task OpenHomepage(IPage page)
+  public static async Task OpenHomepage(IPage page, int expectTimeout = Settings.ExpectTimeout)
   {
     await page.GotoAsync(Settings.EnvironmentURL);
 
-    await Expect(page.Locator(".button__slider-play")).ToBeVisibleAsync();
+    await Expect(page.Locator(".button__slider-play")).ToBeVisibleAsync(new() { Timeout = expectTimeout });
   }
 
   /// <summary>
   /// Starts the Irish Wilds game by clicking on the homepage start button. After that, it verifies that the main
   /// elements on the game page are visible.
   /// </summary>
-  public static async Task StartGame(IPage page)
+  public static async Task StartGame(IPage page, int expectTimeout = Settings.ExpectTimeout)
   {
     await page.Locator(".button__slider-play").ClickAsync();
 
@@ -37,7 +37,7 @@ public static class Home
 
     foreach (string selector in selectors)
     {
-      await Expect(page.Locator(selector)).ToBeVisibleAsync();
+      await Expect(page.Locator(selector)).ToBeVisibleAsync(new() { Timeout = expectTimeout });
     }
   }
 }
