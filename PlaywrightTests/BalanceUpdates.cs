@@ -93,6 +93,6 @@ public class BalanceUpdates
   [Test]
   public async Task Loss()
   {
-    await GameActions.AssertWinAmountIsCorrect(_page, "0.00")
+    await GameActions.AssertWinAmountIsCorrect(_page, "0.00");
   }
 }
