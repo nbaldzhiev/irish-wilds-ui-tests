@@ -32,9 +32,10 @@ jobs:
       - name: Run tests
         env:
           DEVICE: "Desktop Chrome"
-        run: |
-          dotnet test
-          ls -la PlaywrightTests/bin/Debug/net9.0/playwright-traces/
+        run: dotnet test
+
+      - name: Check traces directory
+        run: ls -la PlaywrightTests/bin/Debug/net9.0/playwright-traces/
 
       - uses: actions/upload-artifact@v4
         if: always()
