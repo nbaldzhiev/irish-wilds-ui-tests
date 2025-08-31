@@ -76,7 +76,7 @@ public class BalanceUpdates
         $"{TestContext.CurrentContext.Test.ClassName}.{TestContext.CurrentContext.Test.Name}.zip"
       )
     });
-    await _page.WaitForTimeoutAsync(5000);
+
     await _context.CloseAsync();
     await _browser.CloseAsync();
   }
