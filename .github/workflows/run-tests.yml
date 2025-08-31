@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  DOTNET_VERSION: 9.0
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -14,13 +17,16 @@ jobs:
 
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: $DOTNET_VERSION
 
       - name: Restore dependencies
         run: dotnet restore
 
       - name: Build
         run: dotnet build --no-restore
+
+      - name: Install browsers
+        run: pwsh bin/Debug/net$DOTNET_VERSION/playwright.ps1 install
 
       - name: Run tests
         env:
