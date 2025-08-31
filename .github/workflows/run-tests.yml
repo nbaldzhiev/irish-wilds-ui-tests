@@ -7,6 +7,7 @@ on:
 
 env:
   DOTNET_VERSION: 9.0.304
+  DOTNET_MAJOR: 9.0
 
 jobs:
   build:
@@ -26,12 +27,14 @@ jobs:
         run: dotnet build
 
       - name: Install browsers
-        run: pwsh PlaywrightTests/bin/Debug/net9.0/playwright.ps1 install
+        run: pwsh PlaywrightTests/bin/Debug/net$DOTNET_MAJOR/playwright.ps1 install
 
       - name: Run tests
         env:
           DEVICE: "Desktop Chrome"
-        run: dotnet test
+        run: |
+          dotnet test
+          ls -la PlaywrightTests/bin/Debug/net9.0/playwright-traces/
 
       - uses: actions/upload-artifact@v4
         if: always()
