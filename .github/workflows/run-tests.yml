@@ -42,5 +42,5 @@ jobs:
         if: always()
         with:
           name: playwright-traces
-          path: PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.zip
+          path: PlaywrightTests/bin/Debug/net9.0/playwright-traces/
           compression-level: 0
