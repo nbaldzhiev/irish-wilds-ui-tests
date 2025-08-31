@@ -26,7 +26,7 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Install browsers
-        run: pwsh bin/Debug/net9.0/playwright.ps1 install
+        run: pwsh PlaywrightTests/bin/Debug/net9.0/playwright.ps1 install
 
       - name: Run tests
         env:
