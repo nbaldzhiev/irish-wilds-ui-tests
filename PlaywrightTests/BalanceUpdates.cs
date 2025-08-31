@@ -40,7 +40,7 @@ public class BalanceUpdates
     });
     _context = await _browser.NewContextAsync(_playwright.Devices[deviceName]);
     _page = await _context.NewPageAsync();
-  
+
     // start trace recording
     await _context.Tracing.StartAsync(new()
     {
@@ -55,7 +55,7 @@ public class BalanceUpdates
 
     await Home.OpenHomepage(_page);
     await Home.StartGame(_page);
-  
+
     await GameActions.AssertBalanceAmountIsCorrect(page: _page, amount: Settings.InitialBalanceAmount);
     await GameActions.AssertWinAmountIsCorrect(page: _page, amount: "0.00");
   }
@@ -88,5 +88,11 @@ public class BalanceUpdates
   public async Task Win()
   {
     await GameActions.TriggerSpin(_page);
+  }
+
+  [Test]
+  public async Task Loss()
+  {
+    await GameActions.AssertWinAmountIsCorrect(_page, "0.00")
   }
 }

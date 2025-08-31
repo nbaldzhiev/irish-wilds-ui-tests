@@ -38,12 +38,18 @@ jobs:
         if: always()
         run: ls -la PlaywrightTests/bin/Debug/net9.0/playwright-traces/
 
-      - name: Rename trace zip
+      - name: Rename all Playwright trace zips
         if: always()
-        run: mv PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.zip PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.tracezip
+        run: |
+          cd PlaywrightTests/bin/Debug/net9.0/playwright-traces
+          for f in *.zip; do
+            # Only rename if file actually exists (avoid errors if no matches)
+            [ -e "$f" ] || continue
+            mv "$f" "${f%.zip}.tracezip"
+          done
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-traces
-          path: PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.tracezip
+          path: PlaywrightTests/bin/Debug/net9.0/playwright-traces/*.tracezip
