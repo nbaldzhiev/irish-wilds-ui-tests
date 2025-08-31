@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: 9.0
+  DOTNET_MAJOR_V: 9
+  DOTNET_MINOR_V: 0
+  DOTNET_PATCH_V: 8
 
 jobs:
   build:
@@ -17,7 +19,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: $DOTNET_VERSION
+          dotnet-version: $DOTNET_MAJOR_V.$DOTNET_MINOR_V.$DOTNET_PATCH_V
 
       - name: Restore dependencies
         run: dotnet restore
@@ -26,7 +28,7 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Install browsers
-        run: pwsh bin/Debug/net$DOTNET_VERSION/playwright.ps1 install
+        run: pwsh bin/Debug/net$DOTNET_MAJOR_V.$DOTNET_MINOR_V/playwright.ps1 install
 
       - name: Run tests
         env:
