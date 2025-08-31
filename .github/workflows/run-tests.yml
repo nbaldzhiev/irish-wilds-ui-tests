@@ -43,3 +43,4 @@ jobs:
         with:
           name: playwright-traces
           path: PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.zip
+          compression-level: 0
