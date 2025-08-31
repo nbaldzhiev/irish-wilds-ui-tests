@@ -38,11 +38,12 @@ jobs:
         if: always()
         run: ls -la PlaywrightTests/bin/Debug/net9.0/playwright-traces/
 
-      - run: mv PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.zip PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.tracezip
+      - name: Rename trace zip
+        if: always()
+        run: mv PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.zip PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.tracezip
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-traces
           path: PlaywrightTests/bin/Debug/net9.0/playwright-traces/PlaywrightTests.BalanceUpdates.Win.tracezip
-          compression-level: 0
