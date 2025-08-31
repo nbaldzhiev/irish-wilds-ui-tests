@@ -30,5 +30,10 @@ jobs:
 
       - name: Run tests
         env:
-          DEVICE: "Galaxy S24"
-        run: dotnet test --no-build --verbosity normal
+          DEVICE: "Desktop Chrome"
+        run: dotnet test
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: PlaywrightTests/bin/Debug/net9.0/playwright-traces/
