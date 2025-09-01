@@ -60,8 +60,9 @@ public class BalanceUpdates
     await Home.OpenHomepage(_page);
     await Home.StartGame(_page);
 
-    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: Settings.InitialBalanceAmount);
     await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: "0.00");
+    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: Settings.InitialBalanceAmount);
+    await _page.WaitForTimeoutAsync(5000);
   }
 
   /// <summary>
