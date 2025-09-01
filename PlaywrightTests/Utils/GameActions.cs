@@ -61,7 +61,7 @@ public static class GameActions
       // modify the response body
       bodyJson["Ticket"]!["IsRoundEnded"] = "true";
       bodyJson["Ticket"]!["GameClientState"] = dummyGameState;
-      bodyJson["Ticket"]!["IsWin"] = isWin.ToString();
+      bodyJson["Ticket"]!["IsWin"] = isWin.ToString().ToLower();
       bodyJson["Ticket"]!["TotalWinAmount"] = winAmount.ToString();
 
       bodyJson["Balance"]!["BalanceAfter"] = balance.ToString();

@@ -21,7 +21,7 @@ public class BalanceUpdates
   private IPage _page;
 
   private string deviceName;
-  private double testAmount = 900.99;
+  private const double testAmount = 900.99;
 
   /// <summary>
   /// Creates a new browser & browser context depending on the selected device type.

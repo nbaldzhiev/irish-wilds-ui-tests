@@ -26,8 +26,8 @@ jobs:
       - name: Build
         run: dotnet build
 
-      - name: Install browsers
-        run: pwsh PlaywrightTests/bin/Debug/net${{ env.DOTNET_MAJOR }}/playwright.ps1 install
+      - name: Install chromium browser
+        run: pwsh PlaywrightTests/bin/Debug/net${{ env.DOTNET_MAJOR }}/playwright.ps1 install chromium
 
       - name: Run tests against Desktop (Chrome)
         env:
