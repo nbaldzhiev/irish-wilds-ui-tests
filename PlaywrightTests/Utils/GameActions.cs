@@ -38,7 +38,10 @@ public static class GameActions
     return await page.Locator(".balance .amount").TextContentAsync(new() { Timeout = expectTimeout });
   }
 
-  /// <summary>Modifies the response returned after spinning by changing the balance and win properties.</summary>
+  /// <summary>
+  // Modifies the response returned after spinning by changing the balance and win properties.
+  /// ⚠️ Note: this method needs to be called *before* the action that triggers the response.
+  // </summary>
   /// <param name="isWin">Whether or not the spin is a winning one.</param>
   /// <param name="balance">The value to modify the total balance to.</param>
   /// <param name="winAmount">The value to modify the win amount to.</param>
@@ -50,7 +53,7 @@ public static class GameActions
       IAPIResponse response = await route.FetchAsync();
       string body = await response.TextAsync();
       JsonNode bodyJson = JsonNode.Parse(body)!;
-  
+
       // modify the response body
       bodyJson["Ticket"]!["IsWin"] = isWin.ToString();
       bodyJson["Ticket"]!["TotalWinAmount"] = winAmount.ToString();
@@ -69,7 +72,7 @@ public static class GameActions
         // Override response body.
         Body = updatedBody,
       });
-    }); 
+    });
   }
 }
 

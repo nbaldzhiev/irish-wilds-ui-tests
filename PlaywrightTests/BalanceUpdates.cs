@@ -4,14 +4,11 @@ using PlaywrightTests.Utils;
 
 namespace PlaywrightTests;
 
-
 /// <summary>
 /// Contains tests verifying that the balances update accordingly when winning/losing.
 ///
-/// ⚠️⚠️
-/// Please note: the tests verify the balances by modifying the spin response, not actually relying on a winning spin.
+/// ⚠️ Note: the tests verify the balances by modifying (mocking) the spin responses.
 /// This is done so that the tests aren't reliant on the results of spins, which are random and non-deterministic.
-/// ⚠️⚠️
 /// </summary>
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
@@ -39,7 +36,6 @@ public class BalanceUpdates
     {
       throw new Exception("Setup failed: Argument `deviceName` cannot be null!");
     }
-
 
     // start a browser context with the provided device
     _playwright = await Playwright.CreateAsync();
@@ -113,7 +109,7 @@ public class BalanceUpdates
   [Test]
   public async Task ShouldBeAbleToHaveLossUpdates()
   {
-    double newBalanceAmount = double.Parse(Settings.InitialBalanceAmount) - 1000;
+    double newBalanceAmount = double.Parse(Settings.InitialBalanceAmount) - 1000.99;
 
     await GameActions.ModifySpinResponse(
       page: _page,
