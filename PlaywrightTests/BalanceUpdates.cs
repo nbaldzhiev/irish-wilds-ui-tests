@@ -106,7 +106,7 @@ public class BalanceUpdates
     );
 
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
-
+    await _page.WaitForTimeoutAsync(5000);
     // await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
     // await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: testAmount.ToString());
   }
