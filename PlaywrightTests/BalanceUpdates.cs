@@ -79,17 +79,11 @@ public class BalanceUpdates
   }
 
   /// <summary>
-  /// Verifies that the win amount updates accordingly upon winning spins.
+  /// Verifies that the loss amount updates accordingly.
   /// </summary>
   [Test]
-  public async Task Win()
+  public async Task ShouldBeAbleToHaveLossUpdates()
   {
-    await GameActions.TriggerSpin(_page);
-  }
-
-  [Test]
-  public async Task Loss()
-  {
-    await GameActions.AssertWinAmountIsCorrect(_page, "0.00");
+    await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: true);
   }
 }

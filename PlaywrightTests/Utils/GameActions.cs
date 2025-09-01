@@ -29,11 +29,24 @@ public static class GameActions
   {
     await Expect(page.Locator(".win .amount")).ToHaveTextAsync($"${amount}", new() { Timeout = expectTimeout });
   }
+
   /// <summary>
   /// Triggers a spin using the spin arrow button.
   /// </summary>
-  public static async Task TriggerSpin(IPage page)
+  /// <param name="isUnplacedBetModalExpected">
+  // Whether or not the unplaced bet error modal is expected. If true and found, the modal is closed.
+  // </param>
+  public static async Task TriggerSpin(IPage page, bool isUnplacedBetModalExpected)
   {
+    const string unplacedBetMsgTxt = "Bet was not placed";
+    ILocator errorModal = page.Locator(".modal__window > ._error-popup");
+
     await page.Locator("button.arrows-spin-button").ClickAsync();
+
+    if (isUnplacedBetModalExpected)
+    {
+      await Expect(errorModal.GetByText(unplacedBetMsgTxt)).ToBeVisibleAsync();
+      await errorModal.Locator("button", new() { HasText = "OK" }).ClickAsync();
+    }
   }
 }
