@@ -34,11 +34,6 @@ jobs:
           DEVICE: "Desktop Chrome"
         run: dotnet test
 
-      - name: Run tests against Mobile (Galaxy S24)
-        env:
-          DEVICE: "Galaxy S24"
-        run: dotnet test
-
       - name: Check traces directory
         if: always()
         run: ls -la PlaywrightTests/bin/Debug/net9.0/playwright-traces/

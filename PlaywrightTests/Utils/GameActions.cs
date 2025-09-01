@@ -52,32 +52,8 @@ public static class GameActions
 
     await page.RouteAsync(path, async route =>
     {
-      // fetch original response & its body
-      IAPIResponse response = await route.FetchAsync();
-      string body = await response.TextAsync();
-      JsonNode bodyJson = JsonNode.Parse(body)!;
-
-      // modify the response body
-      bodyJson["Ticket"]!["IsRoundEnded"] = "true";
-      bodyJson["Ticket"]!["GameClientState"] = dummyGameState;
-      bodyJson["Ticket"]!["IsWin"] = isWin.ToString().ToLower();
-      bodyJson["Ticket"]!["TotalWinAmount"] = winAmount.ToString();
-
-      bodyJson["Balance"]!["BalanceAfter"] = balance.ToString();
-      bodyJson["Balance"]!["RealBalance"] = balance.ToString();
-      bodyJson["Balance"]!["TotalWinAmount"] = winAmount.ToString();
-      bodyJson["OperatorExtraData"] = "{\"GameClientState\":\"" + dummyGameState + "\",\"FinancialCallRequired\":true,\"IsRoundEnded\":true,\"IsWin\":false,\"TotalBet\":2.0,\"WinMultiplier\":0.0,\"TotalWinAmount\":0.0,\"Id\":0,\"IsFreeRound\":false}";
-
-      string updatedBody = bodyJson.ToJsonString();
-
       // pass on the modified response
-      await route.FulfillAsync(new()
-      {
-        // Pass all fields from the response.
-        Response = response,
-        // Override response body.
-        Body = updatedBody,
-      });
+      await route.FulfillAsync();
     });
   }
 }
