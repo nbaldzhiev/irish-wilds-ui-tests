@@ -73,9 +73,6 @@ public static class GameActions
       // pass on the modified response
       await route.FulfillAsync(new()
       {
-        // Pass all fields from the response.
-        Response = response,
-        // Override response body.
         Body = updatedBody,
       });
     });
