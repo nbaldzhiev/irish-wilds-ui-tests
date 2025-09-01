@@ -1,41 +1,17 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Playwright;
 using static Microsoft.Playwright.Assertions;
 
 namespace PlaywrightTests.Utils;
 
-/// <summary>
-/// Contains methods related to the actions within the Irish Wilds game.
-/// </summary>
+/// <summary>Contains methods related to the actions within the Irish Wilds game.</summary>
 public static class GameActions
 {
-  /// <summary>
-  /// Asserts that the balance amount is correct.
-  /// </summary>
-  /// <param name="amount">The expected amount as seen in the UI, e.g. "1,980.00"</param>
-  public static async Task AssertBalanceAmountIsCorrect(
-    IPage page, string amount, int expectTimeout = Settings. ExpectTimeout
-  )
-  {
-    await Expect(page.Locator(".balance .amount")).ToHaveTextAsync($"${amount}", new() { Timeout = expectTimeout });
-  }
-
-  /// <summary>
-  /// Asserts that the win amount is correct.
-  /// </summary>
-  /// <param name="amount">The expected amount as seen in the UI, e.g. "0.00"</param>
-  public static async Task AssertWinAmountIsCorrect(
-    IPage page, string amount, int expectTimeout = Settings.ExpectTimeout
-  )
-  {
-    await Expect(page.Locator(".win .amount")).ToHaveTextAsync($"${amount}", new() { Timeout = expectTimeout });
-  }
-
-  /// <summary>
-  /// Triggers a spin using the spin arrow button.
-  /// </summary>
+  /// <summary>Triggers a spin using the spin arrow button.</summary>
   /// <param name="isUnplacedBetModalExpected">
-  // Whether or not the unplaced bet error modal is expected. If true and found, the modal is closed.
-  // </param>
+  /// Whether or not the unplaced bet error modal is expected. If true and found, the modal is closed.
+  /// </param>
   public static async Task TriggerSpin(IPage page, bool isUnplacedBetModalExpected)
   {
     const string unplacedBetMsgTxt = "Bet was not placed";
@@ -49,4 +25,52 @@ public static class GameActions
       await errorModal.Locator("button", new() { HasText = "OK" }).ClickAsync();
     }
   }
+
+  /// <summary>Gets and returns the current stake amount, including the currency symbol.</summary>
+  public static async Task<string?> GetCurrentStakeAmount(IPage page, int expectTimeout = Settings.ExpectTimeout)
+  {
+    return await page.Locator(".stake .amount").TextContentAsync(new() { Timeout = expectTimeout });
+  }
+
+  /// <summary>Gets and returns the current balance amount, including the currency symbol.</summary>
+  public static async Task<string?> GetCurrentBalanceAmount(IPage page, int expectTimeout = Settings.ExpectTimeout)
+  {
+    return await page.Locator(".balance .amount").TextContentAsync(new() { Timeout = expectTimeout });
+  }
+
+  /// <summary>Modifies the response returned after spinning by changing the balance and win properties.</summary>
+  /// <param name="isWin">Whether or not the spin is a winning one.</param>
+  /// <param name="balance">The value to modify the total balance to.</param>
+  /// <param name="winAmount">The value to modify the win amount to.</param>
+  public static async Task ModifySpinResponse(IPage page, bool isWin, double balance, double winAmount)
+  {
+    await page.RouteAsync("**/Client/Action?ClientToken=*PlayerTokenId=*", async route =>
+    {
+      // fetch original response & its body
+      IAPIResponse response = await route.FetchAsync();
+      string body = await response.TextAsync();
+      JsonNode bodyJson = JsonNode.Parse(body)!;
+  
+      // modify the response body
+      bodyJson["Ticket"]!["IsWin"] = isWin.ToString();
+      bodyJson["Ticket"]!["TotalWinAmount"] = winAmount.ToString();
+
+      bodyJson["Balance"]!["BalanceAfter"] = balance.ToString();
+      bodyJson["Balance"]!["RealBalance"] = balance.ToString();
+      bodyJson["Balance"]!["TotalWinAmount"] = winAmount.ToString();
+
+      string updatedBody = bodyJson.ToJsonString();
+
+      // pass on the modified response
+      await route.FulfillAsync(new()
+      {
+        // Pass all fields from the response.
+        Response = response,
+        // Override response body.
+        Body = updatedBody,
+      });
+    }); 
+  }
 }
+
+

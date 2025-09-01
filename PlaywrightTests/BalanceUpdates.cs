@@ -53,8 +53,8 @@ public class BalanceUpdates
     await Home.OpenHomepage(_page);
     await Home.StartGame(_page);
 
-    await GameActions.AssertBalanceAmountIsCorrect(page: _page, amount: Settings.InitialBalanceAmount);
-    await GameActions.AssertWinAmountIsCorrect(page: _page, amount: "0.00");
+    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: Settings.InitialBalanceAmount);
+    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: "0.00");
   }
 
   /// <summary>
@@ -79,11 +79,27 @@ public class BalanceUpdates
   }
 
   /// <summary>
-  /// Verifies that the loss amount updates accordingly.
+  /// Verifies that the win balance updates accordingly.
+  /// ⚠️Note⚠️: the test verifies the balance by modifying the spin response, not actually relying on a winning spin.
+  /// This is done so that the test isn't reliant on the results of spins, which are random and non-deterministic.
   /// </summary>
   [Test]
-  public async Task ShouldBeAbleToHaveLossUpdates()
+  public async Task ShouldBeAbleToHaveWinUpdates()
   {
-    await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: true);
+    // note: the assertions can break if the win amount is of varying format. TODO: improve on that in the future to
+    // make it more flexible
+    const double newWinAmount = 900.99;
+    float balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
+
+    await GameActions.ModifySpinResponse(
+      page: _page,
+      isWin: true,
+      winAmount: newWinAmount,
+      balance: balanceAmount + newWinAmount
+    );
+    await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
+
+    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: (balanceAmount + newWinAmount).ToString());
+    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: newWinAmount.ToString());
   }
 }
