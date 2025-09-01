@@ -53,6 +53,8 @@ public static class GameActions
     await page.RouteAsync(path, async route =>
     {
       // fetch original response & its body
+      IAPIResponse response = await route.FetchAsync();
+
       // pass on the modified response
       await route.FulfillAsync();
     });
