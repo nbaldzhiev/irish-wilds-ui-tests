@@ -4,9 +4,9 @@ namespace PlaywrightTests.Utils;
 public static class Common
 {
   /// <summary>Parses and returns a given amount without the currency symbol.</summary>
-  public static float ParseAmount(string amount)
+  public static double ParseAmount(string amount)
   {
     Assert.That(amount, Is.Not.Null.And.Not.Empty);
-    return float.Parse(amount[1..]);
+    return double.Parse(amount[1..]);
   }
 }

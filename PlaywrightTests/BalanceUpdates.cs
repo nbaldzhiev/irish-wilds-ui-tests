@@ -4,6 +4,15 @@ using PlaywrightTests.Utils;
 
 namespace PlaywrightTests;
 
+
+/// <summary>
+/// Contains tests verifying that the balances update accordingly when winning/losing.
+///
+/// ⚠️⚠️
+/// Please note: the tests verify the balances by modifying the spin response, not actually relying on a winning spin.
+/// This is done so that the tests aren't reliant on the results of spins, which are random and non-deterministic.
+/// ⚠️⚠️
+/// </summary>
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
 public class BalanceUpdates
@@ -24,11 +33,11 @@ public class BalanceUpdates
   public async Task Setup()
   {
     var headless = bool.Parse(Environment.GetEnvironmentVariable("HEADLESS") ?? "true");
-    deviceName = Environment.GetEnvironmentVariable("DEVICE");
+    deviceName = Environment.GetEnvironmentVariable("DEVICE") ?? "";
 
     if (string.IsNullOrEmpty(deviceName))
     {
-      throw new Exception("Setup failed: Argument `deviceName` cannot be null");
+      throw new Exception("Setup failed: Argument `deviceName` cannot be null!");
     }
 
 
@@ -59,7 +68,7 @@ public class BalanceUpdates
 
   /// <summary>
   /// Stops the trace recording started in the setup.
-  /// Gracefully close up the browser context & browser itself after creating them manually in the setup phase.
+  /// Gracefully closes up the browser context & browser objects after creating them manually in the setup phase.
   /// </summary>
   [TearDown]
   public async Task Teardown()
@@ -78,18 +87,15 @@ public class BalanceUpdates
     await _browser.CloseAsync();
   }
 
-  /// <summary>
-  /// Verifies that the win balance updates accordingly.
-  /// ⚠️Note⚠️: the test verifies the balance by modifying the spin response, not actually relying on a winning spin.
-  /// This is done so that the test isn't reliant on the results of spins, which are random and non-deterministic.
-  /// </summary>
+  /// <summary>Verifies that the balance update accordingly when winning.</summary>
   [Test]
   public async Task ShouldBeAbleToHaveWinUpdates()
   {
     // note: the assertions can break if the win amount is of varying format. TODO: improve on that in the future to
     // make it more flexible
     const double newWinAmount = 900.99;
-    float balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
+    double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
+    double newBalanceAmount = balanceAmount + newWinAmount;
 
     await GameActions.ModifySpinResponse(
       page: _page,
@@ -99,7 +105,25 @@ public class BalanceUpdates
     );
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
 
-    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: (balanceAmount + newWinAmount).ToString());
+    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
     await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: newWinAmount.ToString());
+  }
+
+  /// <summary>Verifies that the balance update accordingly when losing.</summary>
+  [Test]
+  public async Task ShouldBeAbleToHaveLossUpdates()
+  {
+    double newBalanceAmount = double.Parse(Settings.InitialBalanceAmount) - 1000;
+
+    await GameActions.ModifySpinResponse(
+      page: _page,
+      isWin: false,
+      winAmount: 0.00,
+      balance: newBalanceAmount
+    );
+    await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
+
+    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
+    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: "0.00");
   }
 }
