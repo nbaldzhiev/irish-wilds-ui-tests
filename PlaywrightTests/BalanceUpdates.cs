@@ -97,13 +97,14 @@ public class BalanceUpdates
     // make it more flexible
     double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
     double newBalanceAmount = balanceAmount + testAmount;
-    /*
+
     await GameActions.ModifySpinResponse(
       page: _page,
       isWin: true,
       winAmount: testAmount,
       balance: balanceAmount + testAmount
-    );*/
+    );
+    await _page.WaitForTimeoutAsync(2000);
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
 
     await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
