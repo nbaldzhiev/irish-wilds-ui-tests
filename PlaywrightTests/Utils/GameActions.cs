@@ -17,7 +17,7 @@ public static class GameActions
     const string unplacedBetMsgTxt = "Bet was not placed";
     ILocator errorModal = page.Locator(".modal__window > ._error-popup");
 
-    await page.Locator("button.arrows-spin-button").ClickAsync(new() { Force = true });
+    await page.Locator("button.arrows-spin-button").ClickAsync();
 
     if (isUnplacedBetModalExpected)
     {
