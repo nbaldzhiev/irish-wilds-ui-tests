@@ -19,7 +19,9 @@ public class BalanceUpdates
   private IBrowser _browser;
   private IBrowserContext _context;
   private IPage _page;
+
   private string deviceName;
+  private double testAmount = 900.99;
 
   /// <summary>
   /// Creates a new browser & browser context depending on the selected device type.
@@ -64,6 +66,7 @@ public class BalanceUpdates
 
   /// <summary>
   /// Stops the trace recording started in the setup.
+  /// Removes all routes started during the tests
   /// Gracefully closes up the browser context & browser objects after creating them manually in the setup phase.
   /// </summary>
   [TearDown]
@@ -79,6 +82,8 @@ public class BalanceUpdates
       )
     });
 
+    await _page.UnrouteAllAsync();
+
     await _context.CloseAsync();
     await _browser.CloseAsync();
   }
@@ -89,27 +94,28 @@ public class BalanceUpdates
   {
     // note: the assertions can break if the win amount is of varying format. TODO: improve on that in the future to
     // make it more flexible
-    const double newWinAmount = 900.99;
     double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
-    double newBalanceAmount = balanceAmount + newWinAmount;
+    double newBalanceAmount = balanceAmount + testAmount;
 
     await GameActions.ModifySpinResponse(
       page: _page,
       isWin: true,
-      winAmount: newWinAmount,
-      balance: balanceAmount + newWinAmount
+      winAmount: testAmount,
+      balance: balanceAmount + testAmount
     );
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
 
     await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
-    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: newWinAmount.ToString());
+    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: testAmount.ToString());
   }
 
   /// <summary>Verifies that the balance update accordingly when losing.</summary>
   [Test]
   public async Task ShouldBeAbleToHaveLossUpdates()
   {
-    double newBalanceAmount = double.Parse(Settings.InitialBalanceAmount) - 1000.99;
+    // note: the assertions can break if the win amount is of varying format. TODO: improve on that in the future to
+    // make it more flexible
+    double newBalanceAmount = double.Parse(Settings.InitialBalanceAmount) - testAmount;
 
     await GameActions.ModifySpinResponse(
       page: _page,
