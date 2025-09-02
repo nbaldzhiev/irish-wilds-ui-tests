@@ -55,6 +55,8 @@ public static class GameActions
       // fetch original response & its body
       IAPIResponse response = await route.FetchAsync();
       string body = await response.TextAsync();
+      body = body.Replace("2000", "3000");
+      body = body.Replace("1998", "4000");
       JsonNode bodyJson = JsonNode.Parse(body)!;
 
       // modify the response body
@@ -73,7 +75,7 @@ public static class GameActions
       // pass on the modified response
       await route.FulfillAsync(new()
       {
-        Body = updatedBody,
+        Body = body,
       });
     });
   }
