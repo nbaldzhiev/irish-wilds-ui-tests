@@ -15,13 +15,13 @@ namespace PlaywrightTests;
 public class BalanceUpdates
 {
 
-  private IPlaywright _playwright;
+  private IPlaywright _pw;
   private IBrowser _browser;
   private IBrowserContext _context;
   private IPage _page;
 
-  private string deviceName;
-  private const double testAmount = 999.99;  // the format should be the same
+  private string device;
+  private const double testAmount = 555.55;  // the format should be the same
 
   /// <summary>
   /// Creates a new browser & browser context depending on the selected device type.
@@ -32,26 +32,24 @@ public class BalanceUpdates
   public async Task Setup()
   {
     var headless = bool.Parse(Environment.GetEnvironmentVariable("HEADLESS") ?? "true");
-    deviceName = Environment.GetEnvironmentVariable("DEVICE") ?? "";
+    device = Environment.GetEnvironmentVariable("DEVICE") ?? "";
 
-    if (string.IsNullOrEmpty(deviceName))
+    if (string.IsNullOrEmpty(device))
     {
-      throw new Exception("Setup failed: Argument `deviceName` cannot be null!");
+      throw new Exception("Setup failed: Argument `DEVICE` cannot be null!");
     }
 
     // start a browser context with the provided device
-    _playwright = await Playwright.CreateAsync();
-    _browser = await _playwright.Chromium.LaunchAsync(new()
-    {
-      Headless = headless
-    });
-    _context = await _browser.NewContextAsync(_playwright.Devices[deviceName]);
+    _pw = await Playwright.CreateAsync();
+    IBrowserType browserType = device.Contains("Firefox") ? _pw.Firefox : device.Contains("Safari") ? _pw.Webkit : _pw.Chromium;
+    _browser = await browserType.LaunchAsync(new() { Headless = headless });
+    _context = await _browser.NewContextAsync(_pw.Devices[device]);
     _page = await _context.NewPageAsync();
 
     // start trace recording
     await _context.Tracing.StartAsync(new()
     {
-      Title = TestContext.CurrentContext.Test.ClassName + "." + TestContext.CurrentContext.Test.Name + $".{deviceName}",
+      Title = TestContext.CurrentContext.Test.ClassName + "." + TestContext.CurrentContext.Test.Name + $".{device}",
       Screenshots = true,
       Snapshots = true,
       Sources = true
@@ -78,7 +76,7 @@ public class BalanceUpdates
       Path = Path.Combine(
         TestContext.CurrentContext.WorkDirectory,
         "playwright-traces",
-        $"{TestContext.CurrentContext.Test.ClassName}.{TestContext.CurrentContext.Test.Name}.{deviceName}.zip"
+        $"{TestContext.CurrentContext.Test.ClassName}.{TestContext.CurrentContext.Test.Name}.{device}.zip"
       )
     });
 
