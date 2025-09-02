@@ -7,7 +7,7 @@ namespace PlaywrightTests.Tests;
 /// <summary>
 /// Contains tests verifying that the balances update accordingly when winning/losing.
 ///
-/// ⚠️ Note: the tests verify the balances by modifying (mocking) the spin responses.
+/// ⚠️⚠️⚠️ Note: the tests verify the balances by modifying (mocking) the spin responses.
 /// This is done so that the tests aren't reliant on the results of spins, which are random and non-deterministic.
 /// </summary>
 [Parallelizable(ParallelScope.Self)]
@@ -26,7 +26,7 @@ public class BalanceUpdates
   /// <summary>
   /// Creates a new browser & browser context depending on the selected device type.
   /// Starts trace recording (upon any test result). Trace zips are located in bin/Debug/netX/playwright-traces/
-  /// Open the homepage of the Irish Wilds game, starts the game and verifies the initial balances before each test.
+  /// Opens the homepage of the Irish Wilds game, starts the game and verifies the initial balances before each test.
   /// </summary>
   [SetUp]
   public async Task Setup()
