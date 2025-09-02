@@ -2,7 +2,7 @@
 
 using PlaywrightTests.Utils;
 
-namespace PlaywrightTests;
+namespace PlaywrightTests.Tests;
 
 /// <summary>
 /// Contains tests verifying that the balances update accordingly when winning/losing.
