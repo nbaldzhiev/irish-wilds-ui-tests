@@ -1,6 +1,6 @@
 # Irish Wilds UI Tests
 
-A repository containing UI Tests, written in C# + Playwright, for the [Irish Wilds game](https://games.spinberry.com/irish_wilds_demo_site).
+A repository containing UI Tests, written in C# (NUnit) + Playwright, for the [Irish Wilds game](https://games.spinberry.com/irish_wilds_demo_site).
 
 ## Running tests
 
