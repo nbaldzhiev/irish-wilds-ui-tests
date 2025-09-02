@@ -14,7 +14,7 @@ Clone the repository and run:
 
     $ cd irish-wilds-ui-tests
     $ dotnet build
-    $ pwsh bin/Debug/netX/playwright.ps1 install
+    $ pwsh PlaywrightTests/bin/Debug/netX/playwright.ps1 install
     $ HEADLESS=false DEVICE="Galaxy S24" dotnet test
 
 Environment variable `DEVICE` can receive any of the valid [Playwright device descriptors](https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/deviceDescriptorsSource.json) (e.g. Desktop Chrome, Desktop Firefox, Galaxy S24, Pixel 7). Environment variable `HEADLESS` controls whether or not the browser is ran in headless mode (default is `true`).
