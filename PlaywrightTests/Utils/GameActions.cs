@@ -60,19 +60,14 @@ public static class GameActions
       // modify the response body
       bodyJson["Ticket"]!["GameClientState"] = dummyGameState;
       bodyJson["Ticket"]!["IsWin"] = isWin.ToString().ToLower();
-
       bodyJson["Balance"]!["BalanceAfter"] = balance.ToString();
       bodyJson["Balance"]!["RealBalance"] = balance.ToString();
       bodyJson["Balance"]!["TotalWinAmount"] = winAmount.ToString();
-      bodyJson["OperatorExtraData"] = "{\"GameClientState\":\"" + dummyGameState + "\",\"FinancialCallRequired\":true,\"IsRoundEnded\":true,\"IsWin\":false,\"TotalBet\":2.0,\"WinMultiplier\":0.0,\"TotalWinAmount\":0.0,\"Id\":0,\"IsFreeRound\":false}";
 
       string updatedBody = bodyJson.ToJsonString();
 
       // pass on the modified response
-      await route.FulfillAsync(new()
-      {
-        Body = updatedBody,
-      });
+      await route.FulfillAsync(new() { Body = updatedBody });
     });
   }
 }

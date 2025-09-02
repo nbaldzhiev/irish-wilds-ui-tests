@@ -105,14 +105,13 @@ public class BalanceUpdates
     );
 
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
-
+  
     await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
     // await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: testAmount.ToString());
   }
 
   /// <summary>Verifies that the balance update accordingly when losing.</summary>
   [Test]
-  [Ignore("temp")]
   public async Task ShouldBeAbleToHaveLossUpdates()
   {
     // note: the assertions can break if the win amount is of varying format. TODO: improve on that in the future to
