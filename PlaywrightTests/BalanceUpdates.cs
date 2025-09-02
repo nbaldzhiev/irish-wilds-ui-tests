@@ -21,7 +21,7 @@ public class BalanceUpdates
   private IPage _page;
 
   private string deviceName;
-  private const double testAmount = 900.99;
+  private const double testAmount = 999.99;  // the format should be the same
 
   /// <summary>
   /// Creates a new browser & browser context depending on the selected device type.
@@ -92,8 +92,6 @@ public class BalanceUpdates
   [Test]
   public async Task ShouldBeAbleToHaveWinUpdates()
   {
-    // note: the assertions can break if the win amount is of varying format. TODO: improve on that in the future to
-    // make it more flexible
     double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
     double newBalanceAmount = balanceAmount + testAmount;
 
@@ -105,8 +103,10 @@ public class BalanceUpdates
     );
 
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
-  
+
     await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
+    // modifying the Ticket.TotalWinAmount property causes unexpected results, likely due to some calculations that
+    // the FE makes. Therefore, we are not testing the win amount for now. TODO: find out what happens and uncomment
     // await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: testAmount.ToString());
   }
 
@@ -114,8 +114,6 @@ public class BalanceUpdates
   [Test]
   public async Task ShouldBeAbleToHaveLossUpdates()
   {
-    // note: the assertions can break if the win amount is of varying format. TODO: improve on that in the future to
-    // make it more flexible
     double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
     double newBalanceAmount = balanceAmount - testAmount;
 

@@ -1,4 +1,5 @@
 name: Run E2E Tests
+run-name: Run E2E Tests - ${{ inputs.device_name }}
 
 on:
   workflow_dispatch:
@@ -33,7 +34,7 @@ jobs:
       - name: Install chromium browser
         run: pwsh PlaywrightTests/bin/Debug/net${{ env.DOTNET_MAJOR }}/playwright.ps1 install chromium
 
-      - name: Run tests against Desktop (Chrome)
+      - name: Run tests against ${{ inputs.device_name }}
         env:
           DEVICE: ${{ inputs.device_name }}
         run: dotnet test
