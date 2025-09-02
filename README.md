@@ -17,19 +17,19 @@ Clone the repository and run:
     $ pwsh bin/Debug/netX/playwright.ps1 install
     $ HEADLESS=false DEVICE="Galaxy S24" dotnet test
 
-Environment variable `DEVICE` can receive any of the valid [Playwright device descriptors](https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/deviceDescriptorsSource.json). Environment variable `HEADLESS` controls whether or not the browser is ran in headless mode (default is `true`).
+Environment variable `DEVICE` can receive any of the valid [Playwright device descriptors](https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/deviceDescriptorsSource.json) (e.g. Desktop Chrome, Desktop Firefox, Galaxy S24, Pixel 7). Environment variable `HEADLESS` controls whether or not the browser is ran in headless mode (default is `true`).
 
 ### GitHub Actions (CI)
 
--   [run-tests.yml](https://github.com/nbaldzhiev/irish-wilds-ui-tests/blob/main/.github/workflows/run-tests.yml) - Runs all tests upon manual trigger, receiving the device name as workflow input parameter;
+-   [run-tests.yml](https://github.com/nbaldzhiev/irish-wilds-ui-tests/blob/main/.github/workflows/run-tests.yml) - Runs all tests upon manual trigger, receiving the device name as a workflow input parameter.
 
 > **_NOTE:_** You need to be a repository collaborator in order to run the workflow.
 
 > **_NOTE 2:_** There seems to be some limitation with Webkit on newer Ubuntu/Playwright versions and it fails due to missing dependencies (https://github.com/microsoft/playwright/issues/30368).
 
-### Playwright traces
+## Playwright traces
 
-The tests generate Playwright traces that can be opened locally or in https://trace.playwright.dev/.
+The tests generate [Playwright traces](https://playwright.dev/docs/trace-viewer) that can be opened locally or in https://trace.playwright.dev/.
 
 - When running the tests locally, the location of the traces is in `PlaywrightTests/bin/Debug/netX/playwright-traces/`.
 - When running the tests via the GitHub Actions workflow, the traces are uploaded as workflow artifacts. You need to download the artifacts, unarchive and rename the files from `.tracezip` to `.zip` (which is due to an auto-unpack limitation of the `upload-artifact` action).
