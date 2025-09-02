@@ -12,7 +12,8 @@ public static class GameAssertions
     IPage page, string amount, int expectTimeout = Settings.ExpectTimeout
   )
   {
-    await Expect(page.Locator(".balance .amount")).ToHaveTextAsync($"${amount}", new() { Timeout = expectTimeout });
+    string formatted = double.Parse(amount).ToString("N2");
+    await Expect(page.Locator(".balance .amount")).ToHaveTextAsync($"${formatted}", new() { Timeout = expectTimeout });
   }
 
   /// <summary>Asserts that the win amount is correct.</summary>
@@ -21,6 +22,7 @@ public static class GameAssertions
     IPage page, string amount, int expectTimeout = Settings.ExpectTimeout
   )
   {
-    await Expect(page.Locator(".win .amount")).ToHaveTextAsync($"${amount}", new() { Timeout = expectTimeout });
+    string formatted = double.Parse(amount).ToString("N2");
+    await Expect(page.Locator(".win .amount")).ToHaveTextAsync($"${formatted}", new() { Timeout = expectTimeout });
   }
 }
