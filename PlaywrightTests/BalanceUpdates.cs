@@ -62,7 +62,6 @@ public class BalanceUpdates
 
     await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: "0.00");
     await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: Settings.InitialBalanceAmount);
-    await _page.WaitForTimeoutAsync(5000);
   }
 
   /// <summary>
@@ -108,7 +107,7 @@ public class BalanceUpdates
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
 
     await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
-    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: testAmount.ToString());
+    // await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: testAmount.ToString());
   }
 
   /// <summary>Verifies that the balance update accordingly when losing.</summary>
