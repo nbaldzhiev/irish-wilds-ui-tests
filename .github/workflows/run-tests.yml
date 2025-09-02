@@ -1,9 +1,13 @@
-name: Run E2E Tests - Desktop & Mobile
+name: Run E2E Tests
 
 on:
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
+    inputs:
+      device_name:
+        description: 'Name of the device, i.e. Desktop Chrome, Galaxy S24 (https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/deviceDescriptorsSource.json)'
+        required: true
+        default: 'Desktop Chrome'
+        type: string 
 
 env:
   DOTNET_VERSION: 9.0.304
@@ -31,7 +35,7 @@ jobs:
 
       - name: Run tests against Desktop (Chrome)
         env:
-          DEVICE: "Desktop Chrome"
+          DEVICE: ${{ inputs.device_name }}
         run: dotnet test
 
       - name: Check traces directory
