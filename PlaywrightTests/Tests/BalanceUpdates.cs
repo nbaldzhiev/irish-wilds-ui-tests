@@ -20,8 +20,8 @@ public class BalanceUpdates
   private IBrowserContext _context;
   private IPage _page;
 
-  private string device;
-  private const double testAmount = 555.55;  // the format should be the same
+  private string _device;
+  private const double _testAmount = 555.55;  // the format should be the same
 
   /// <summary>
   /// Creates a new browser & browser context depending on the selected device type.
@@ -32,24 +32,24 @@ public class BalanceUpdates
   public async Task Setup()
   {
     var headless = bool.Parse(Environment.GetEnvironmentVariable("HEADLESS") ?? "true");
-    device = Environment.GetEnvironmentVariable("DEVICE") ?? "";
+    _device = Environment.GetEnvironmentVariable("DEVICE") ?? "";
 
-    if (string.IsNullOrEmpty(device))
+    if (string.IsNullOrEmpty(_device))
     {
       throw new Exception("Setup failed: Argument `DEVICE` cannot be null!");
     }
 
     // start a browser context with the provided device
     _pw = await Playwright.CreateAsync();
-    IBrowserType browserType = device.Contains("Firefox") ? _pw.Firefox : device.Contains("Safari") ? _pw.Webkit : _pw.Chromium;
+    IBrowserType browserType = _device.Contains("Firefox") ? _pw.Firefox : _device.Contains("Safari") ? _pw.Webkit : _pw.Chromium;
     _browser = await browserType.LaunchAsync(new() { Headless = headless });
-    _context = await _browser.NewContextAsync(_pw.Devices[device]);
+    _context = await _browser.NewContextAsync(_pw.Devices[_device]);
     _page = await _context.NewPageAsync();
 
     // start trace recording
     await _context.Tracing.StartAsync(new()
     {
-      Title = TestContext.CurrentContext.Test.ClassName + "." + TestContext.CurrentContext.Test.Name + $".{device}",
+      Title = TestContext.CurrentContext.Test.ClassName + "." + TestContext.CurrentContext.Test.Name + $".{_device}",
       Screenshots = true,
       Snapshots = true,
       Sources = true
@@ -76,7 +76,7 @@ public class BalanceUpdates
       Path = Path.Combine(
         TestContext.CurrentContext.WorkDirectory,
         "playwright-traces",
-        $"{TestContext.CurrentContext.Test.ClassName}.{TestContext.CurrentContext.Test.Name}.{device}.zip"
+        $"{TestContext.CurrentContext.Test.ClassName}.{TestContext.CurrentContext.Test.Name}.{_device}.zip"
       )
     });
 
@@ -91,13 +91,13 @@ public class BalanceUpdates
   public async Task ShouldBeAbleToHaveWinUpdates()
   {
     double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
-    double newBalanceAmount = balanceAmount + testAmount;
+    double newBalanceAmount = balanceAmount + _testAmount;
 
     await GameActions.ModifySpinResponse(
       page: _page,
       isWin: true,
-      winAmount: testAmount,
-      balance: balanceAmount + testAmount
+      winAmount: _testAmount,
+      balance: balanceAmount + _testAmount
     );
 
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
@@ -113,7 +113,7 @@ public class BalanceUpdates
   public async Task ShouldBeAbleToHaveLossUpdates()
   {
     double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
-    double newBalanceAmount = balanceAmount - testAmount;
+    double newBalanceAmount = balanceAmount - _testAmount;
 
     await GameActions.ModifySpinResponse(
       page: _page,
