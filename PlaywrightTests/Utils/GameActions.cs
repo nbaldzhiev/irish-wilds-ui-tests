@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json.Nodes;
 using Microsoft.Playwright;
 using static Microsoft.Playwright.Assertions;
@@ -35,6 +36,12 @@ public static class GameActions
   public static async Task<string?> GetCurrentBalanceAmount(IPage page, int expectTimeout = Settings.ExpectTimeout)
   {
     return await page.Locator(".balance .amount").TextContentAsync(new() { Timeout = expectTimeout });
+  }
+
+  /// <summary>Gets and returns the current win amount, including the currency symbol.</summary>
+  public static async Task<string?> GetCurrentWinAmount(IPage page, int expectTimeout = Settings.ExpectTimeout)
+  {
+    return await page.Locator(".win .amount").TextContentAsync(new() { Timeout = expectTimeout });
   }
 
   /// <summary>
@@ -75,6 +82,68 @@ public static class GameActions
       await route.FulfillAsync(new() { Body = updatedBody });
     });
   }
+
+  /// <summary>Waits for the EndGame response to be received, indicating the end of a spin cycle.</summary>
+  public static async Task WaitForEndGameResponse(IPage page, int timeout = 30_000)
+  {
+    const string path = "/Client/EndGame";
+
+    await page.WaitForResponseAsync(
+      response => response.Url.Contains(path) && response.Status == 200 && response.Request.Method == "POST",
+      new() { Timeout = timeout }
+    );
+  }
+
+  /// <summary>Performs a spin and waits for all related responses until the EndGame endpoint is called.</summary>
+  /// <returns> A dictionary containing the total win amount and the last balance before the spin. </returns>
+  public static async Task<Dictionary<string, double>> PerformAndAwaitSpinCycle(IPage page, int timeout = 10_000)
+  {
+    const string path = "/Client/Action?ClientToken=";
+
+    double accWinAmount = 0.0;
+    double lastActionWinnings = 0.0;
+    double lastBalanceBefore = 0.0;
+
+    async Task GetResponseValues(IResponse response)
+    {
+      string body = await response.TextAsync();
+      JsonNode bodyJson = JsonNode.Parse(body)!;
+      JsonNode clientStateJson = JsonNode.Parse(bodyJson["Ticket"]!["GameClientState"]!.ToString())!;
+
+      accWinAmount = double.Parse(clientStateJson["AccumulatedWinAmount"]!.ToString());
+      lastActionWinnings = double.Parse(clientStateJson["CurrActionWinnings"]!.ToString());
+      lastBalanceBefore = double.Parse(bodyJson["Balance"]!["BalanceBefore"]!.ToString());
+    }
+
+    // trigger the spin and wait for the first response
+    IResponse response = await page.RunAndWaitForResponseAsync(
+      async () => await page.Locator("button.arrows-spin-button").ClickAsync(),
+      response => response.Url.Contains(path) && response.Status == 200 && response.Request.Method == "POST",
+      new() { Timeout = timeout }
+    );
+
+    await GetResponseValues(response);
+
+    // if the spin was a winning one, there are additional responses to wait for
+    while (lastActionWinnings > 0)
+    {
+      response = await page.WaitForResponseAsync(
+        response => response.Url.Contains(path) && response.Status == 200 && response.Request.Method == "POST",
+        new() { Timeout = timeout * 5 }
+      );
+
+      await GetResponseValues(response);
+
+      if (lastActionWinnings == 0)
+        break;
+    }
+
+    await WaitForEndGameResponse(page);
+
+    return new Dictionary<string, double>
+    {
+      { "totalWinAmount", accWinAmount },
+      { "lastBalanceBefore", lastBalanceBefore }
+    };
+  }
 }
-
-

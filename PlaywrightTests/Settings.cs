@@ -7,5 +7,5 @@ public static class Settings
 {
   public const int ExpectTimeout = 15_000;
   public const string EnvironmentURL = "https://games.spinberry.com/irish_wilds_demo_site";
-  public const string InitialBalanceAmount = "2,000.00";
+  public const double InitialBalanceAmount = 2000;
 }

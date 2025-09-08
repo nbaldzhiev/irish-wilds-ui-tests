@@ -7,22 +7,22 @@ namespace PlaywrightTests.Utils;
 public static class GameAssertions
 {
   /// <summary>Asserts that the balance amount is correct.</summary>
-  /// <param name="amount">The expected amount as seen in the UI, e.g. "1,980.00"</param>
+  /// <param name="amount">The expected amount as seen in the UI, e.g. 1,980.00</param>
   public static async Task AssertBalanceAmountIsCorrect(
-    IPage page, string amount, int expectTimeout = Settings.ExpectTimeout
+    IPage page, double amount, int expectTimeout = Settings.ExpectTimeout
   )
   {
-    string formatted = double.Parse(amount).ToString("N2");
+    string formatted = amount.ToString("N2");
     await Expect(page.Locator(".balance .amount")).ToHaveTextAsync($"${formatted}", new() { Timeout = expectTimeout });
   }
 
   /// <summary>Asserts that the win amount is correct.</summary>
-  /// <param name="amount">The expected amount as seen in the UI, e.g. "0.00"</param>
+  /// <param name="amount">The expected amount as seen in the UI, e.g. 0.00</param>
   public static async Task AssertWinAmountIsCorrect(
-    IPage page, string amount, int expectTimeout = Settings.ExpectTimeout
+    IPage page, double amount, int expectTimeout = Settings.ExpectTimeout
   )
   {
-    string formatted = double.Parse(amount).ToString("N2");
+    string formatted = amount.ToString("N2");
     await Expect(page.Locator(".win .amount")).ToHaveTextAsync($"${formatted}", new() { Timeout = expectTimeout });
   }
 }

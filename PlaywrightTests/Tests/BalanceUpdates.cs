@@ -4,12 +4,7 @@ using PlaywrightTests.Utils;
 
 namespace PlaywrightTests.Tests;
 
-/// <summary>
-/// Contains tests verifying that the balances update accordingly when winning/losing.
-///
-/// ⚠️⚠️⚠️ Note: the tests verify the balances by modifying (mocking) the spin responses.
-/// This is done so that the tests aren't reliant on the results of spins, which are random and non-deterministic.
-/// </summary>
+/// <summary>Contains tests verifying that the balances update accordingly when winning/losing.</summary>
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
 public class BalanceUpdates
@@ -22,6 +17,7 @@ public class BalanceUpdates
 
   private string _device;
   private const double _testAmount = 555.55;  // the format should be the same
+  private const int _numberOfSpins = 3;
 
   /// <summary>
   /// Creates a new browser & browser context depending on the selected device type.
@@ -58,7 +54,7 @@ public class BalanceUpdates
     await Home.OpenHomepage(_page);
     await Home.StartGame(_page);
 
-    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: "0.00");
+    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: 0.00);
     await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: Settings.InitialBalanceAmount);
   }
 
@@ -86,8 +82,11 @@ public class BalanceUpdates
     await _browser.CloseAsync();
   }
 
-  /// <summary>Verifies that the balance update accordingly when winning.</summary>
-  [Test]
+  /// <summary>
+  /// Verifies that the balance update accordingly when winning.
+  /// ⚠️ Note: the test verifies the balance by modifying (mocking) the spin response, to avoid the spin randomness. 
+  /// </summary>
+  [Test, CancelAfter(60_000)]
   public async Task ShouldBeAbleToHaveWinUpdates()
   {
     double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
@@ -102,14 +101,17 @@ public class BalanceUpdates
 
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
 
-    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
+    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount);
     // modifying the Ticket.TotalWinAmount property causes unexpected results, likely due to some calculations that
     // the FE makes. Therefore, we are not testing the win amount for now. TODO: find out what happens and uncomment
     // await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: testAmount.ToString());
   }
 
-  /// <summary>Verifies that the balance update accordingly when losing.</summary>
-  [Test]
+  /// <summary>
+  /// Verifies that the balance update accordingly when winning.
+  /// ⚠️ Note: the test verifies the balance by modifying (mocking) the spin response, to avoid the spin randomness. 
+  /// </summary>
+  [Test, CancelAfter(60_000)]
   public async Task ShouldBeAbleToHaveLossUpdates()
   {
     double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!);
@@ -123,7 +125,27 @@ public class BalanceUpdates
     );
     await GameActions.TriggerSpin(page: _page, isUnplacedBetModalExpected: false);
 
-    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount.ToString());
-    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: "0.00");
+    await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: newBalanceAmount);
+    await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: 0.00);
+  }
+
+  /// <summary>Verifies that the total & win balances update accordingly when doing multiple real spins.</summary>
+  [Test, CancelAfter(120_000)]
+  public async Task ShouldBeAbleToHaveBalanceUpdatesAfterMultipleSpins()
+  {
+    for (int i = 0; i < _numberOfSpins; i++)
+    {
+      double stakeAmount = Common.ParseAmount((await GameActions.GetCurrentStakeAmount(_page))!);
+      double balanceAmount = Common.ParseAmount((await GameActions.GetCurrentBalanceAmount(_page))!) - stakeAmount;
+
+      Dictionary<string, double> results = await GameActions.PerformAndAwaitSpinCycle(_page);
+      double totalWinAmount = results["totalWinAmount"] * 0.01;
+      double expectedTotalBalance;
+
+      expectedTotalBalance = balanceAmount + totalWinAmount;
+
+      await GameAssertions.AssertBalanceAmountIsCorrect(page: _page, amount: expectedTotalBalance);
+      await GameAssertions.AssertWinAmountIsCorrect(page: _page, amount: totalWinAmount);
+    }
   }
 }
